@@ -1,9 +1,14 @@
 package com.example.claudine.simplemusicplayer;
 
-public class Song {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Song implements Serializable{
     private long id;
     private String title;
     private String artist;
+    private List<String> tagList = new ArrayList<String>();
 
     public Song(long songID, String songTitle, String songArtist) {
         id = songID;
@@ -14,5 +19,6 @@ public class Song {
     public long getID(){return id;}
     public String getTitle() {return title;}
     public String getArtist() {return artist;}
+    public List<String> getTagList() {return tagList;}
 
 }

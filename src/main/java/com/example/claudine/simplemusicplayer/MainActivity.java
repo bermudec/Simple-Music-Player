@@ -42,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Song> songList; //List of our song class for references songs
     private ListView songView; //List in the View that displays the songs
-    private MusicService musicSrv;
-    private Intent playIntent;
-    private boolean musicBound=false;
+    private MusicService musicSrv; //Service that handles playing music
+    private Intent playIntent; //Starts and gives data to music service class
+    private boolean musicBound=false; //Tells us if service is bound
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu, menu); //Populates menu
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -73,27 +73,31 @@ public class MainActivity extends AppCompatActivity {
                 return a.getTitle().compareTo(b.getTitle());
             }
         });
-        SongAdapter songAdt = new SongAdapter(this, songList);
-        songView.setAdapter(songAdt);
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        SongAdapter songAdt = new SongAdapter(this, songList); //Adapts song list into the list view for display
+        songView.setAdapter(songAdt); //Links list and songs
+        Toolbar myToolbar = findViewById(R.id.my_toolbar); //Creates toolbar
         setSupportActionBar(myToolbar);
     }
 
+    //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MusicBinder binder = (MusicBinder) service;
+            //get service
             musicSrv = binder.getService();
+            //pass list
             musicSrv.setList(songList);
             musicBound=true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            musicBound=false;
+            musicBound=false; //unbinds when service disconnected
         }
     };
 
+    //Initializes play intent and start music service
     @Override
     protected void onStart(){
         super.onStart();
@@ -104,11 +108,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //plays songs when clicked in list
     public void songPicked(View view){
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
     }
 
+    //handles clicks on menu buttons
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //stops service when app is destroyed
     @Override
     protected void onDestroy(){
         stopService(playIntent);
